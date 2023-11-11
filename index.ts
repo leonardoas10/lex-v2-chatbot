@@ -92,7 +92,7 @@ const mainOptionsIntent = async (option: string, botLanguage: string) => {
 
         case '2':
             await responseFulfilled(
-                'Contact Leonardo via: email leoaranguren10@gmail.com'
+                'Contact Leonardo via email: leoaranguren10@gmail.com'
             );
             break;
 

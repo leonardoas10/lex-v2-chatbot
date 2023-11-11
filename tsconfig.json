@@ -4,10 +4,6 @@
         "moduleResolution": "node",
         "target": "es6",
         "lib": ["es6", "dom"],
-        // "noImplicitAny": true,
-        // "removeComments": true,
-        // "preserveConstEnums": true,
-        // "sourceMap": true,
         "esModuleInterop": true,
         "outDir": "./dist",
         "allowJs": true
