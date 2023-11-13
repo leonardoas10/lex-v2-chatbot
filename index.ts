@@ -12,6 +12,7 @@ interface SessionState {
 interface Message {
     contentType: string;
     content: string;
+    imageResponseCard?: Object;
 }
 
 interface Response {
@@ -34,6 +35,31 @@ let response: Response = {
         {
             contentType: 'PlainText',
             content: '', // Specify the type for 'content' if necessary
+        },
+        {
+            contentType: 'ImageResponseCard',
+            content: 'Options', // Specify the type for 'content' if necessary
+            imageResponseCard: {
+                title: 'Anything else? ',
+                buttons: [
+                    {
+                        text: 'About Leonardo Aranguren (1)',
+                        value: '1',
+                    },
+                    {
+                        text: 'Contact Leonardo Aranguren (2)',
+                        value: '2',
+                    },
+                    {
+                        text: 'Purpose of the website (3)',
+                        value: '3',
+                    },
+                    {
+                        text: 'Get Leonardo Aranguren CV (4)',
+                        value: '4',
+                    },
+                ],
+            },
         },
     ],
 };
@@ -62,11 +88,10 @@ const dispatcher = async (event: any) => {
                 event.sessionState.intent.slots.options.value.originalValue;
             await mainOptionsIntent(option, botLanguage);
             break;
-        case 'SendCVByEmail':
-            const email =
-                event.sessionState.intent.slots.email.value.originalValue;
+        case 'DownloadCV':
+            response.messages[0].contentType = 'CustomPayload';
             await responseFulfilled(
-                `The CV is arriving soon to your email: ${email}`
+                `It's ready for download. Click [Leonardo Aranguren CV](${process.env.EN_CV_URL})`
             );
             break;
         //es_ES
@@ -91,6 +116,7 @@ const mainOptionsIntent = async (option: string, botLanguage: string) => {
             break;
 
         case '2':
+            response.messages[0].contentType = 'CustomPayload';
             await responseFulfilled(
                 'Contact Leonardo via email: leoaranguren10@gmail.com'
             );
