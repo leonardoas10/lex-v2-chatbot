@@ -79,7 +79,7 @@ const mainOptionsIntent = async (option: string, botLanguage: TLanguage) => {
         case '1':
             mainOption =
                 botLanguage === 'es_ES'
-                    ? 'Leonardo Aranguren es desarrollador Full Stack, arquitecto de soluciones y líder técnico. Atento a los avances tecnológicos, ostentando múltiples certificaciones AWS. Entusiasta por las soluciones de arquitectura en la nube, bilingüe y comprometido con el aprendizaje continuo y la superación de cada desafío'
+                    ? 'Leonardo Aranguren es Desarrollador Full Stack, Arquitecto de Soluciones y Líder Técnico. Atento a los avances tecnológicos, ostentando múltiples certificaciones AWS. Entusiasta por las soluciones de arquitectura en la nube, bilingüe y comprometido con el aprendizaje continuo y la superación de cada desafío'
                     : 'Leonardo Aranguren is a Full Stack Developer, Solutions Architect and Technical Lead. Attentive to technological advancements, holding multiple AWS certifications. Enthusiastic about cloud architecture solutions, bilingual, and committed to continuous learning and overcoming every challenge';
             await responseFulfilled(mainOption);
             break;
