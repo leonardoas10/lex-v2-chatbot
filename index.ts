@@ -123,32 +123,12 @@ const getDynamicImageResponseCard = (botLanguage: TLanguage) => {
     const title = botLanguage === 'es_ES' ? '¿Algo más?' : 'Anything else?';
     const buttons = [
         {
-            text:
-                botLanguage === 'es_ES'
-                    ? 'Sobre Leonardo Aranguren (1)'
-                    : 'About Leonardo Aranguren (1)',
-            value: '1',
+            text: botLanguage === 'es_ES' ? 'Más opciones' : 'More options',
+            value: botLanguage === 'es_ES' ? 'Opciones' : 'Options',
         },
         {
-            text:
-                botLanguage === 'es_ES'
-                    ? 'Contactar a Leonardo Aranguren (2)'
-                    : 'Contact Leonardo Aranguren (2)',
-            value: '2',
-        },
-        {
-            text:
-                botLanguage === 'es_ES'
-                    ? 'Propósito del sitio web (3)'
-                    : 'Purpose of the website (3)',
-            value: '3',
-        },
-        {
-            text:
-                botLanguage === 'es_ES'
-                    ? 'Obtener CV de Leonardo Aranguren (4)'
-                    : 'Get Leonardo Aranguren CV (4)',
-            value: '4',
+            text: botLanguage === 'es_ES' ? 'Adios Lex' : 'Bye Lex',
+            value: botLanguage === 'es_ES' ? 'Adios' : 'Bye',
         },
     ];
 
