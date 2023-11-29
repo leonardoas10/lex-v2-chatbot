@@ -24,7 +24,7 @@ const dispatcher = async (event: any) => {
         messages: [
             {
                 contentType: 'PlainText',
-                content: getInitialMessage(botLanguage),
+                content: '',
             },
             {
                 contentType: 'ImageResponseCard',
@@ -46,27 +46,66 @@ const dispatcher = async (event: any) => {
         'event.sessionState.intent.slots => ',
         sessionState.intent.slots
     );
+    const username = sessionState.sessionAttributes.name;
+    const email = sessionState.sessionAttributes.email;
+    console.info('User => ', username);
+    console.info('Email => ', email);
+
+    let answerMessage: string;
 
     switch (sessionState.intent.name) {
         case 'MainOptions':
-            const option =
-                sessionState.intent.slots.options.value.originalValue;
-            await mainOptionsIntent(option, botLanguage);
+            if (!email && !username) {
+                response.messages[1].imageResponseCard =
+                    getTryAgain(botLanguage);
+                answerMessage =
+                    botLanguage === 'es_ES'
+                        ? 'Proporcione su nombre y correo electrónico para continuar con las opciones'
+                        : 'Please provide your name and email for continue to options';
+                await responseFailed(answerMessage);
+            } else {
+                const option =
+                    sessionState.intent.slots.options.value.originalValue;
+                await mainOptionsIntent(option, botLanguage);
+            }
             break;
-        case 'DownloadCV':
-            response.messages[0].contentType = 'CustomPayload';
-            const text =
-                botLanguage === 'es_ES'
-                    ? `Está listo para descargar. Haga clic [Leonardo Aranguren CV](${process.env.ES_CV_URL})`
-                    : `It's ready for download. Click [Leonardo Aranguren CV](${process.env.EN_CV_URL})`;
-            await responseFulfilled(text);
+        case 'GetEmail':
+            const validEmail = await isValidEmail(
+                sessionState.sessionAttributes.email
+            );
+            if (validEmail) {
+                response.messages[1].imageResponseCard =
+                    getMainOptions(botLanguage);
+                answerMessage =
+                    botLanguage === 'es_ES'
+                        ? 'Gracias por el correo electrónico válido, ¿qué quieres saber?'
+                        : 'Thanks for the valid email, what do you want to know?';
+                await responseFulfilled(answerMessage);
+            } else {
+                const badEmail = sessionState.sessionAttributes.email;
+                response.messages[1].imageResponseCard =
+                    getTryAgain(botLanguage);
+                response.sessionState.sessionAttributes.name = null;
+                response.sessionState.sessionAttributes.email = null;
+                answerMessage =
+                    botLanguage === 'es_ES'
+                        ? `Este es un correo electrónico no válido '${badEmail}'`
+                        : `This is an invalid email '${badEmail}'`;
+                await responseFailed(answerMessage);
+            }
             break;
         default:
-            const failedMessage =
+            answerMessage =
                 botLanguage === 'es_ES'
                     ? 'No existe esa opción'
                     : 'No option available';
-            await responseFailed(failedMessage);
+            if (!email && !username) {
+                response.messages[1].imageResponseCard =
+                    getTryAgain(botLanguage);
+                await responseFailed(answerMessage);
+            } else {
+                await responseFailed(answerMessage);
+            }
             break;
     }
 
@@ -101,6 +140,15 @@ const mainOptionsIntent = async (option: string, botLanguage: TLanguage) => {
             await responseFulfilled(mainOption);
             break;
 
+        case '4':
+            response.messages[0].contentType = 'CustomPayload';
+            mainOption =
+                botLanguage === 'es_ES'
+                    ? `Está listo para descargar. Haga clic [Leonardo Aranguren CV](${process.env.ES_CV_URL})`
+                    : `It's ready for download. Click [Leonardo Aranguren CV](${process.env.EN_CV_URL})`;
+            await responseFulfilled(mainOption);
+            break;
+
         default:
             break;
     }
@@ -127,7 +175,7 @@ const getDynamicImageResponseCard = (botLanguage: TLanguage) => {
             value: botLanguage === 'es_ES' ? 'Opciones' : 'Options',
         },
         {
-            text: botLanguage === 'es_ES' ? 'Adios Lex' : 'Bye Lex',
+            text: botLanguage === 'es_ES' ? 'Adios Lex Jr' : 'Bye Lex Jr',
             value: botLanguage === 'es_ES' ? 'Adios' : 'Bye',
         },
     ];
@@ -139,10 +187,83 @@ const getDynamicImageResponseCard = (botLanguage: TLanguage) => {
     };
 };
 
-const getInitialMessage = (botLanguage: TLanguage) => {
-    return botLanguage === 'es_ES'
-        ? '¡Hola! ¿En qué puedo ayudarte hoy?'
-        : 'Hello! How can I assist you today?';
+const getMainOptions = (botLanguage: TLanguage) => {
+    const cardContent =
+        botLanguage === 'es_ES' ? 'Opciones de Lex Jr' : 'Lex Jr Options';
+    const title = botLanguage === 'es_ES' ? 'Opciones' : 'Options';
+    const buttons = [
+        {
+            text:
+                botLanguage === 'es_ES'
+                    ? 'Sobre Leonardo Aranguren (1)'
+                    : 'About Leonardo Aranguren (1)',
+            value: '1',
+        },
+        {
+            text:
+                botLanguage === 'es_ES'
+                    ? 'Contácta a Leonardo Aranguren (2)'
+                    : 'Contact Leonardo Aranguren (2)',
+            value: '2',
+        },
+        {
+            text:
+                botLanguage === 'es_ES'
+                    ? 'Proposito del sitio web (3)'
+                    : 'Purpose of the website (3)',
+            value: '3',
+        },
+        {
+            text:
+                botLanguage === 'es_ES'
+                    ? 'Obtener CV Leonardo Aranguren (4)'
+                    : 'Get Leonardo Aranguren CV (4)',
+            value: '4',
+        },
+        {
+            text: botLanguage === 'es_ES' ? 'Adios Lex Jr' : 'Bye Lex Jr',
+            value: botLanguage === 'es_ES' ? 'Adios' : 'Bye',
+        },
+    ];
+
+    return {
+        title,
+        buttons,
+        content: cardContent,
+    };
+};
+
+const getTryAgain = (botLanguage: TLanguage) => {
+    const cardContent =
+        botLanguage === 'es_ES' ? 'Intenta de Nuevo' : 'Try Again';
+    const title = botLanguage === 'es_ES' ? 'Intenta de Nuevo' : 'Try Again';
+    const buttons = [
+        {
+            text:
+                botLanguage === 'es_ES'
+                    ? 'Saludar a Lex Jr'
+                    : 'Say Hi to Lex Jr',
+            value: botLanguage === 'es_ES' ? 'Hola' : 'Hi',
+        },
+        {
+            text: botLanguage === 'es_ES' ? 'Adios Lex Jr' : 'Bye Lex Jr',
+            value: botLanguage === 'es_ES' ? 'Adios' : 'Bye',
+        },
+    ];
+
+    return {
+        title,
+        buttons,
+        content: cardContent,
+    };
+};
+
+const isValidEmail = async (email: string): Promise<boolean> => {
+    // Regular expression for a basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // Test the email against the regular expression
+    return emailRegex.test(email);
 };
 
 export const handler = async (event: any) => {

@@ -24,8 +24,8 @@ interface IDialogAction {
         | 'ElicitSlot';
 }
 
-interface ISessionState {
-    sessionAttributes: string;
+export interface ISessionState {
+    sessionAttributes: any;
     dialogAction: IDialogAction;
     intent: IIntent;
 }

@@ -2,14 +2,14 @@
     "name": "lambda-cv-app-chatbot",
     "version": "1.0.0",
     "description": "This is the lambda function that Amazon Lex V2 execute behind scenes.",
-    "main": "index.js",
+    "main": "index.ts",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
         "build": "tsc && cp package.json dist/ && cd dist && zip -r handler.zip ./* && cd .."
     },
     "keywords": [],
     "author": "Leonardo Aranguren S",
     "license": "ISC",
+    "homepage": "https://chatbot.leonardoaranguren.com",
     "dependencies": {
         "typescript": "^5.2.2"
     },
