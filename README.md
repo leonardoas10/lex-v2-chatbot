@@ -1,4 +1,4 @@
-# Lambda for Amazon Lex v2 - ChatBot CV APP :fire:
+# Lambda for Amazon Lex v2 - ChatBot Lex Jr :fire:
 
 ## Steps to compile and create .zip
 
